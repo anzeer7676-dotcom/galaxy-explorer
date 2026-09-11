@@ -1,8 +1,13 @@
 [English](README.md) | **简体中文** | [日本語](README.ja.md) | [한국어](README.ko.md)
 
 # Galaxy Explorer 🌌
-演示页面
-https://zjoooooo.github.io/galaxy-explorer/
+[演示页面](https://anzeer7676-dotcom.github.io/galaxy-explorer/)
+
+> **Fork 说明：** 本项目是 Justin Zhang Jun 的
+> [Galaxy Explorer](https://github.com/zjoooooo/galaxy-explorer) 的轻度非商业修改版，
+> 由 [@anzeer7676-dotcom](https://github.com/anzeer7676-dotcom) 维护。此版本增加了低风险界面/无障碍优化，
+> 以及由 Agnes 生成的开场短片。出处与素材说明见 [`NOTICE.md`](NOTICE.md)。
+
 <img width="1920" height="945" alt="Image_2026-07-04_141404_478" src="https://github.com/user-attachments/assets/ce6388f3-5854-4c13-9d6c-daccac89bf24" />
 
 一个交互式、由代码程序化生成的**银河系**——包含完整的 3D **太阳系**、漫游的
@@ -76,7 +81,7 @@ https://zjoooooo.github.io/galaxy-explorer/
 
 ```sh
 # 1. 获取代码
-git clone https://github.com/zjoooooo/galaxy-explorer.git
+git clone https://github.com/anzeer7676-dotcom/galaxy-explorer.git
 cd galaxy-explorer
 
 # 2. 用任意静态服务器托管，例如：
@@ -109,6 +114,8 @@ nginx 或任何 Web 主机。上传文件夹即可——没有任何需要构建
   环境特效。
 - `?tune=1` — 星云辉光着色器的实时滑块；实时调整观感，满意后把数值复制进
   tunables。
+- `?intro=1` — 强制播放 Agnes 生成的开场短片，即使此前已经看过。
+- `?intro=0` — 禁用开场短片，便于截图和不中断测试。
 
 ## 🎛️ 自定义
 

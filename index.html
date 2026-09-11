@@ -1,6 +1,7 @@
 <!-- Milky Way Galaxy — an interactive procedural galaxy in WebGL (three.js).
      Copyright © 2026 Justin Zhang Jun. PolyForm Noncommercial License 1.0.0 (see LICENSE).
-     Free for study, teaching and research; commercial use needs a separate licence. -->
+     Free for study, teaching and research; commercial use needs a separate licence.
+     Fork modifications by anzeer7676-dotcom (2026); see NOTICE.md. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +9,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
 <title>Milky Way Galaxy</title>
+<meta name="description" content="An interactive WebGL Milky Way, Solar System, and celestial sky explorer, forked from Galaxy Explorer by Justin Zhang Jun.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Galaxy Explorer — Milky Way Galaxy">
+<meta property="og:description" content="Explore a procedural Milky Way, the Solar System, comets, and the celestial sky in your browser.">
+<meta property="og:url" content="https://anzeer7676-dotcom.github.io/galaxy-explorer/">
+<meta property="og:image" content="https://anzeer7676-dotcom.github.io/galaxy-explorer/images/cinematic-intro-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Galaxy Explorer — Milky Way Galaxy">
+<meta name="twitter:description" content="Explore a procedural Milky Way, the Solar System, comets, and the celestial sky in your browser.">
+<meta name="twitter:image" content="https://anzeer7676-dotcom.github.io/galaxy-explorer/images/cinematic-intro-poster.jpg">
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -18,7 +29,7 @@
 
   .overlay { position: fixed; z-index: 5; }
   #title { top: 14px; left: 18px; font-size: 15px; font-weight: 600; pointer-events: none; }
-  #title small { display: block; font-size: 11px; color: #6b7280; font-weight: 400; margin-top: 2px; }
+  #title small { display: block; font-size: 11px; color: #98a6bf; font-weight: 400; margin-top: 2px; }
   #msg { top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 13px; color: #9ca3af; pointer-events: none; }
   #skyveil { position: fixed; inset: 0; background: #e8f1ff; opacity: 0; pointer-events: none; z-index: 999; }
 
@@ -35,6 +46,11 @@
   #skyback, #solarback { top: 64px; left: 18px; z-index: 6; display: none; cursor: pointer; font: inherit; font-size: 13px;
     color: #cbd5e1; background: rgba(10,14,24,.72); border: 1px solid #243049; border-radius: 8px; padding: 6px 12px; }
   #skyback:hover, #solarback:hover { border-color: #6366f1; color: #fff; }
+  #introbtn, #aboutbtn { position: fixed; z-index: 6; cursor: pointer; font: inherit; font-size: 12px;
+    color: #cbd5e1; background: rgba(10,14,24,.72); border: 1px solid #243049; border-radius: 8px; padding: 6px 10px; }
+  #introbtn { top: 82px; right: 14px; }
+  #aboutbtn { top: 48px; right: 14px; }
+  #introbtn:hover, #aboutbtn:hover { border-color: #6366f1; color: #fff; }
   /* solar time-speed pill (pause / 1x / 16x / 128x) */
   #solartime { position: absolute; left: 18px; bottom: 18px; display: flex; gap: 6px; pointer-events: auto; z-index: 6; }
   #solartime button { cursor: pointer; font: inherit; font-size: 12px; color: #cbd5e1;
@@ -55,7 +71,8 @@
   #skylabels, #solarlabels { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
   .skylabel { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer;
     font-size: 13px; letter-spacing: .08em; color: #cfe0ff; white-space: nowrap; text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 10px rgba(120,170,255,.45); transition: opacity .2s ease; }
+    paint-order: stroke fill; -webkit-text-stroke: .45px rgba(0,0,0,.9);
+    text-shadow: 0 1px 2px #000, 0 0 4px #000, 0 0 10px rgba(120,170,255,.45); transition: opacity .2s ease; }
   .skylabel small { display: block; font-size: 10px; color: #8fa3c8; letter-spacing: .12em; }
   .skylabel.dim { opacity: .35; }
   .skylabel.sel { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 14px rgba(150,190,255,.9); }
@@ -64,7 +81,8 @@
   .solar-label { position: absolute; transform: translate(-50%, -100%); pointer-events: auto; cursor: pointer; /* anchored ABOVE the body — names must not sit on the disc */
     font: inherit; font-size: 13px; letter-spacing: .08em; color: #ffe5a9; white-space: nowrap; text-align: center;
     background: transparent; border: 0; min-width: 24px; min-height: 24px; padding: 2px 8px;
-    text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 10px rgba(255,190,100,.45); transition: opacity .2s ease; }
+    paint-order: stroke fill; -webkit-text-stroke: .45px rgba(0,0,0,.9);
+    text-shadow: 0 1px 2px #000, 0 0 4px #000, 0 0 10px rgba(255,190,100,.45); transition: opacity .2s ease; }
   .solar-label small { display: block; font-size: 10px; letter-spacing: .05em; color: #9fb4d8; text-shadow: 0 1px 3px rgba(0,0,0,.9); }
 
   /* location beacons: borderless glow-dot + pulse rings + floating label (no boxes, no borders) */
@@ -84,7 +102,8 @@
   .b-ring.r2 { animation-delay: 1.6s; }
   @keyframes bping { 0% { transform: scale(.35); opacity: .85; } 75% { opacity: .15; } 100% { transform: scale(3); opacity: 0; } }
   .b-label { font-size: 12px; letter-spacing: .06em; color: #dfeaff; white-space: nowrap;
-    text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 10px rgba(120,170,255,.5); }
+    paint-order: stroke fill; -webkit-text-stroke: .45px rgba(0,0,0,.9);
+    text-shadow: 0 1px 2px #000, 0 0 4px #000, 0 0 10px rgba(120,170,255,.5); }
   .b-label small { display: block; font-size: 9.5px; letter-spacing: .05em; color: #93a5c4; margin-top: 1px; }
   .beacon.sun { --bc: #ffd27a; }
   .beacon.ext { --bc: #d9a6ff; } /* external galaxies — violet, signals "beyond the Milky Way" */
@@ -163,8 +182,13 @@
     .solar-label { font-size: 11px; letter-spacing: .04em; min-width: 44px; min-height: 44px; padding: 8px 12px; }
     .solar-label small { font-size: 9px; }
     #solartime button { min-width: 44px; min-height: 44px; }
-    #solarstrip, #galaxystrip { left: 12px; right: 12px; transform: none; max-width: none; bottom: 70px; }
-    #solarstrip button, #galaxystrip button { min-height: 40px; }
+    #solarstrip, #galaxystrip { left: 0; right: 0; transform: none; max-width: none; bottom: 66px;
+      padding: 4px 12px; scroll-padding-inline: 12px; overscroll-behavior-x: contain;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent); }
+    #solarstrip button, #galaxystrip button { min-height: 44px; padding: 6px 11px; }
+    #introbtn { top: 86px; right: max(12px, env(safe-area-inset-right)); min-height: 40px; }
+    #aboutbtn { top: 48px; right: max(12px, env(safe-area-inset-right)); min-height: 40px; }
   }
 
   /* background-music control: speaker button + a hover popup listing tracks by name */
@@ -172,12 +196,53 @@
   #audiobtn { display: inline-block; cursor: pointer; font-size: 18px; line-height: 1; background: transparent;
     border: 1px solid transparent; border-radius: 8px; padding: 7px 9px; user-select: none; opacity: .8; }
   #audiobtn:hover { border-color: #6366f1; background: rgba(8,12,22,.6); opacity: 1; }
+  @media (max-width: 640px) {
+    #audio { right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); }
+    #audiobtn { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  }
   #audiolist { display: none; margin-bottom: 6px; background: rgba(10,14,24,.95); border: 1px solid #243049;
     border-radius: 8px; overflow: hidden; }
   #audio:hover #audiolist { display: block; }
   #audiolist .a-track { padding: 6px 12px; font-size: 12px; color: #cbd5e1; cursor: pointer; white-space: nowrap; text-align: left; }
   #audiolist .a-track:hover { background: #161f31; }
   #audiolist .a-track.on { color: #34d399; }
+
+  /* Fork notice, attribution, and optional first-visit cinema opening. */
+  #aboutdlg { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center;
+    padding: 20px; background: rgba(2,3,9,.84); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  #aboutdlg.open { display: flex; }
+  #aboutcard { position: relative; width: min(92vw, 580px); max-height: min(78vh, 620px); overflow-y: auto;
+    padding: 24px 26px; border: 1px solid rgba(156,192,255,.24); border-radius: 16px;
+    background: rgba(9,13,24,.97); box-shadow: 0 24px 80px rgba(0,0,0,.65); }
+  #aboutcard h2 { margin: 0 36px 12px 0; color: #f5f8ff; font-size: 20px; }
+  #aboutcard p { margin: 10px 0; color: #b7c3da; font-size: 13px; line-height: 1.6; }
+  #aboutcard a { color: #9cc0ff; }
+  #aboutcard .credit-line { padding-top: 9px; border-top: 1px solid rgba(255,255,255,.08); }
+  #aboutclose { position: absolute; top: 10px; right: 12px; cursor: pointer; font: inherit; font-size: 22px;
+    color: #cbd5e1; background: none; border: 0; padding: 6px 9px; }
+  #aboutclose:hover { color: #fff; }
+
+  #introoverlay { position: fixed; inset: 0; z-index: 70; display: none; overflow: hidden; background: #02030a;
+    opacity: 0; transition: opacity .65s ease; }
+  #introoverlay.open { display: block; }
+  #introoverlay.shown { opacity: 1; }
+  #introoverlay.closing { opacity: 0; }
+  #introposter, #introvideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #introposter { filter: saturate(.82) brightness(.76); }
+  #introvideo { opacity: 0; transition: opacity .45s ease; }
+  #introvideo.playing { opacity: 1; }
+  #introoverlay::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(1,2,8,.34), transparent 30%, transparent 70%, rgba(1,2,8,.42)); }
+  #introskip, #introplay { position: absolute; z-index: 2; cursor: pointer; font: inherit; color: #edf4ff;
+    border: 1px solid rgba(255,255,255,.28); background: rgba(6,10,20,.48);
+    -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
+  #introskip { top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
+    min-height: 40px; padding: 8px 14px; border-radius: 999px; font-size: 12px; }
+  #introplay { left: 50%; top: 50%; transform: translate(-50%, -50%); width: 64px; height: 64px;
+    border-radius: 50%; display: none; font-size: 24px; line-height: 1; }
+  #introoverlay.failed #introplay, #introoverlay.paused #introplay { display: block; }
+  #introskip:hover, #introplay:hover { background: rgba(28,40,66,.76); border-color: rgba(255,255,255,.55); }
+  body.gx-cinema #introbtn, body.gx-cinema #aboutbtn { display: none !important; }
 </style>
 </head>
 <body>
@@ -185,6 +250,8 @@
 
 <div id="title" class="overlay">Milky Way Galaxy
   <small>drag to orbit · scroll to zoom · F cinema · M music</small></div>
+<button id="introbtn" type="button">▶ Intro</button>
+<button id="aboutbtn" type="button">About</button>
 
 <select id="lang" class="overlay" title="Language">
   <option value="en">English</option>
@@ -207,9 +274,24 @@
   <div id="bp-body"></div>
 </div>
 
+<div id="aboutdlg" role="dialog" aria-modal="true" aria-labelledby="abouttitle">
+  <div id="aboutcard">
+    <button id="aboutclose" type="button" aria-label="Close">×</button>
+    <h2 id="abouttitle">About &amp; credits</h2>
+    <div id="aboutbody"></div>
+  </div>
+</div>
+
 <div id="audio" class="overlay">
   <div id="audiolist"></div>
   <button id="audiobtn" type="button" title="Background music — click to play / mute (M)" aria-label="Background music">🔇</button>
+</div>
+
+<div id="introoverlay" aria-hidden="true">
+  <img id="introposter" src="images/cinematic-intro-poster.jpg" alt="" loading="lazy" decoding="async">
+  <video id="introvideo" muted playsinline preload="none" aria-hidden="true"></video>
+  <button id="introskip" type="button">Skip intro</button>
+  <button id="introplay" type="button" aria-label="Play intro">▶</button>
 </div>
 
 <script src="vendor/three.min.js"></script>
@@ -237,6 +319,7 @@
     fps: videoParamInt('fps', 30),
     quality: videoParams.get('quality') || 'final'
   });
+  var introController = null;
   var videoRandomCalls = 0, videoRandomHash = 2166136261;
   function mulberry32(seed) {
     var state = seed >>> 0;
@@ -1442,6 +1525,7 @@
   function setBeaconLang(lang) {
     beaconLang = lang;
     try { localStorage.setItem('gx-lang', lang); } catch (e) {}
+    syncForkUi(lang);
     for (var i = 0; i < BEACONS.length; i++) {
       var t = BEACONS[i].t[lang] || BEACONS[i].t.en;
       BEACONS[i].el.querySelector('.b-label').innerHTML = t[0] + (t[1] ? '<small>' + t[1] + '</small>' : '');
@@ -3088,6 +3172,14 @@
   }
   window.addEventListener('keydown', function (e) { if (document.body.classList.contains('gx-cinema')) return; if ((e.key || '').toLowerCase() === 'escape' && selectedBeacon !== null) { clearSelection(); e.stopImmediatePropagation(); } });
   var beaconTmp = new THREE.Vector3();
+  function placeScreenLabel(el, x, y, pad) {
+    var safe = typeof pad === 'number' ? pad : 8;
+    var width = el.offsetWidth || 0;
+    var minX = safe + width * 0.5, maxX = window.innerWidth - safe - width * 0.5;
+    var clampedX = minX <= maxX ? Math.max(minX, Math.min(maxX, x)) : window.innerWidth * 0.5;
+    el.style.left = clampedX + 'px';
+    el.style.top = y + 'px';
+  }
   function updateBeacons() { // call AFTER render() — galaxyRoot/camera matrices are fresh then
     for (var i = 0; i < BEACONS.length; i++) {
       var b = BEACONS[i];
@@ -3104,8 +3196,7 @@
       if (vis) {
         b.sx = (beaconTmp.x * 0.5 + 0.5) * window.innerWidth;
         b.sy = (-beaconTmp.y * 0.5 + 0.5) * window.innerHeight;
-        b.el.style.left = b.sx + 'px';
-        b.el.style.top = b.sy + 'px';
+        placeScreenLabel(b.el, b.sx, b.sy, 8);
       }
     }
     // greedy label declutter: earlier (more famous) beacons win; selected always shows.
@@ -3268,7 +3359,7 @@
     candidates.forEach(function (candidate) {
       candidate.label.style.display = '';
       candidate.label.classList.toggle('sel', candidate.body.id === solarNav.selectedId);
-      candidate.label.style.left = candidate.x + 'px'; candidate.label.style.top = candidate.y + 'px';
+      placeScreenLabel(candidate.label, candidate.x, candidate.y, 8);
     });
     if (videoMode && bpEl.classList.contains('open')) {
       // Recording only: the info panel covers the right edge, and a body label whose centre lands
@@ -3294,8 +3385,8 @@
       label.classList.toggle('sel', solarCometSelected === cometIndex);
       var cometDistance = solarCamera.position.distanceTo(solarLabelPoint);
       var cometScreenRadius = (comet.coma.scale.x * 0.6 + 1) / (2 * Math.tan(solarCamera.fov * Math.PI / 360) * Math.max(cometDistance, 0.001)) * window.innerHeight;
-      label.style.left = ((projected.x * 0.5 + 0.5) * window.innerWidth) + 'px';
-      label.style.top = ((-projected.y * 0.5 + 0.5) * window.innerHeight - Math.min(cometScreenRadius + 8, window.innerHeight * 0.4)) + 'px';
+      placeScreenLabel(label, (projected.x * 0.5 + 0.5) * window.innerWidth,
+        (-projected.y * 0.5 + 0.5) * window.innerHeight - Math.min(cometScreenRadius + 8, window.innerHeight * 0.4), 8);
     });
   }
   var solarCometLabels = {};
@@ -4371,8 +4462,8 @@
       var vis = viewMode === 'sky' && skyTmp.z < 1 && skyTmp.x > -1.05 && skyTmp.x < 1.05 && skyTmp.y > -1.05 && skyTmp.y < 1.05;
       if (vis !== c.shown) { c.el.style.display = vis ? '' : 'none'; c.shown = vis; }
       if (vis) {
-        c.el.style.left = ((skyTmp.x * 0.5 + 0.5) * window.innerWidth) + 'px';
-        c.el.style.top = ((-skyTmp.y * 0.5 + 0.5) * window.innerHeight) + 'px';
+        placeScreenLabel(c.el, (skyTmp.x * 0.5 + 0.5) * window.innerWidth,
+          (-skyTmp.y * 0.5 + 0.5) * window.innerHeight, 8);
       }
     }
     for (var gi = 0; gi < SKY_GAL.length; gi++) { // galaxy markers ride the same projection
@@ -4380,7 +4471,8 @@
       skyTmp.copy(g.dir).multiplyScalar(SKY_R).project(skyCamera);
       var gv = viewMode === 'sky' && skyTmp.z < 1 && skyTmp.x > -1.05 && skyTmp.x < 1.05 && skyTmp.y > -1.05 && skyTmp.y < 1.05;
       if (gv !== g.shown) { g.el.style.display = gv ? '' : 'none'; g.shown = gv; }
-      if (gv) { g.el.style.left = ((skyTmp.x * 0.5 + 0.5) * window.innerWidth) + 'px'; g.el.style.top = ((-skyTmp.y * 0.5 + 0.5) * window.innerHeight) + 'px'; }
+      if (gv) placeScreenLabel(g.el, (skyTmp.x * 0.5 + 0.5) * window.innerWidth,
+        (-skyTmp.y * 0.5 + 0.5) * window.innerHeight, 8);
     }
   };
   window.skySelected = null;
@@ -6480,9 +6572,209 @@
   }
   // ── video runtime end ────────────────────────────────────────────────────────
 
+  // ── fork credits + optional first-visit opening ─────────────────────────────
+  function forkCopy(lang) {
+    var copy = {
+      en: {
+        intro: '▶ Intro', about: 'About', aboutTitle: 'About & credits',
+        skip: 'Skip intro', play: 'Play intro', close: 'Close',
+        lead: 'A lightly modified fork of Galaxy Explorer, created by Justin Zhang Jun. Modified and maintained by @anzeer7676-dotcom.',
+        original: 'Original project:', fork: 'Fork:', ai: 'Opening media:', license: 'License:',
+        aiText: 'AI-generated still and film made with Agnes Image 2.0 Flash and Agnes Video V2.0.',
+        licenseText: 'PolyForm Noncommercial License 1.0.0; upstream notices and third-party media terms are preserved.'
+      },
+      hans: {
+        intro: '▶ 开场', about: '关于', aboutTitle: '关于与出处',
+        skip: '跳过开场', play: '播放开场', close: '关闭',
+        lead: '这是 Galaxy Explorer 的轻度修改版，原作者为 Justin Zhang Jun，修改与维护者为 @anzeer7676-dotcom。',
+        original: '原项目：', fork: 'Fork：', ai: '开场素材：', license: '许可证：',
+        aiText: '开场封面与短片由 Agnes Image 2.0 Flash 和 Agnes Video V2.0 生成。',
+        licenseText: '遵循 PolyForm 非商业许可证 1.0.0，并保留上游声明与第三方素材条款。'
+      },
+      hant: {
+        intro: '▶ 開場', about: '關於', aboutTitle: '關於與出處',
+        skip: '跳過開場', play: '播放開場', close: '關閉',
+        lead: '這是 Galaxy Explorer 的輕度修改版，原作者為 Justin Zhang Jun，修改與維護者為 @anzeer7676-dotcom。',
+        original: '原專案：', fork: 'Fork：', ai: '開場素材：', license: '授權條款：',
+        aiText: '開場封面與短片由 Agnes Image 2.0 Flash 和 Agnes Video V2.0 生成。',
+        licenseText: '遵循 PolyForm 非商業授權條款 1.0.0，並保留上游聲明與第三方素材條款。'
+      },
+      ja: {
+        intro: '▶ オープニング', about: '情報', aboutTitle: 'このサイトとクレジット',
+        skip: 'オープニングをスキップ', play: 'オープニングを再生', close: '閉じる',
+        lead: 'Galaxy Explorer の軽度な改変版です。原作者は Justin Zhang Jun、改変・保守は @anzeer7676-dotcom です。',
+        original: '原作：', fork: 'Fork：', ai: 'オープニング素材：', license: 'ライセンス：',
+        aiText: 'スチルと映像は Agnes Image 2.0 Flash および Agnes Video V2.0 で生成しました。',
+        licenseText: 'PolyForm Noncommercial License 1.0.0 に従い、上流の表示と第三者素材の条件を保持しています。'
+      },
+      ko: {
+        intro: '▶ 인트로', about: '정보', aboutTitle: '소개 및 크레딧',
+        skip: '인트로 건너뛰기', play: '인트로 재생', close: '닫기',
+        lead: 'Galaxy Explorer를 가볍게 수정한 포크입니다. 원작자는 Justin Zhang Jun이며, 수정 및 유지 관리는 @anzeer7676-dotcom이 맡고 있습니다.',
+        original: '원본 프로젝트:', fork: 'Fork:', ai: '인트로 미디어:', license: '라이선스:',
+        aiText: '스틸과 영상은 Agnes Image 2.0 Flash 및 Agnes Video V2.0으로 생성했습니다.',
+        licenseText: 'PolyForm Noncommercial License 1.0.0을 따르며 업스트림 고지와 제3자 미디어 조건을 유지합니다.'
+      }
+    };
+    return copy[lang] || copy.en;
+  }
+
+  function syncForkUi(lang) {
+    var copy = forkCopy(lang);
+    var langMap = { en: 'en', hans: 'zh-CN', hant: 'zh-Hant', ja: 'ja', ko: 'ko' };
+    document.documentElement.lang = langMap[lang] || 'en';
+    var introButton = document.getElementById('introbtn'), aboutButton = document.getElementById('aboutbtn');
+    if (introButton) { introButton.textContent = copy.intro; introButton.title = copy.play; introButton.setAttribute('aria-label', copy.play); }
+    if (aboutButton) { aboutButton.textContent = copy.about; aboutButton.title = copy.aboutTitle; aboutButton.setAttribute('aria-label', copy.aboutTitle); }
+    var skipButton = document.getElementById('introskip'), playButton = document.getElementById('introplay');
+    if (skipButton) { skipButton.textContent = copy.skip; skipButton.setAttribute('aria-label', copy.skip); }
+    if (playButton) { playButton.setAttribute('aria-label', copy.play); playButton.title = copy.play; }
+    var aboutTitle = document.getElementById('abouttitle');
+    if (aboutTitle) aboutTitle.textContent = copy.aboutTitle;
+    var aboutBody = document.getElementById('aboutbody');
+    if (aboutBody) {
+      aboutBody.innerHTML =
+        '<p>' + copy.lead + '</p>' +
+        '<p class="credit-line"><strong>' + copy.original + '</strong> ' +
+          '<a href="https://github.com/zjoooooo/galaxy-explorer" target="_blank" rel="noopener noreferrer">Justin Zhang Jun / Galaxy Explorer</a></p>' +
+        '<p><strong>' + copy.fork + '</strong> <a href="https://github.com/anzeer7676-dotcom/galaxy-explorer" target="_blank" rel="noopener noreferrer">@anzeer7676-dotcom / galaxy-explorer</a></p>' +
+        '<p><strong>' + copy.ai + '</strong> ' + copy.aiText +
+          ' <a href="https://platform.agnes-ai.com" target="_blank" rel="noopener noreferrer">Agnes AI</a></p>' +
+        '<p><strong>' + copy.license + '</strong> ' + copy.licenseText +
+          ' <a href="LICENSE">LICENSE</a></p>';
+    }
+    var closeButton = document.getElementById('aboutclose');
+    if (closeButton) { closeButton.setAttribute('aria-label', copy.close); closeButton.title = copy.close; }
+    if (introController) introController.sync();
+  }
+
+  function initForkUiControls() {
+    var aboutDialog = document.getElementById('aboutdlg'), aboutOpen = document.getElementById('aboutbtn');
+    var aboutClose = document.getElementById('aboutclose');
+    if (aboutDialog && aboutOpen && aboutClose) {
+      var restoreFocus = null;
+      function closeAbout() {
+        aboutDialog.classList.remove('open');
+        if (restoreFocus && restoreFocus.focus) restoreFocus.focus();
+      }
+      function openAbout() {
+        restoreFocus = document.activeElement;
+        aboutDialog.classList.add('open');
+        aboutClose.focus();
+      }
+      aboutOpen.addEventListener('click', openAbout);
+      aboutClose.addEventListener('click', closeAbout);
+      aboutDialog.addEventListener('click', function (event) { if (event.target === aboutDialog) closeAbout(); });
+      window.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && aboutDialog.classList.contains('open')) {
+          event.preventDefault(); event.stopImmediatePropagation(); closeAbout();
+        }
+      }, true);
+    }
+
+    var overlay = document.getElementById('introoverlay');
+    var video = document.getElementById('introvideo');
+    var skip = document.getElementById('introskip');
+    var play = document.getElementById('introplay');
+    var replayButton = document.getElementById('introbtn');
+    if (!overlay || !video || !skip || !play || !replayButton) return;
+
+    var STORAGE_KEY = 'galaxyIntroSeenV1', MEDIA_SRC = 'video/galaxy-intro.mp4';
+    var forceIntro = videoParams.get('intro') === '1';
+    var disableIntro = videoParams.get('intro') === '0' || videoMode || /[?&]solarTest=1/.test(location.search);
+    var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var seen = false;
+    try { seen = localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) {}
+    var active = false, releaseTimer = null, firstStart = true;
+
+    function remember() { try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {} }
+    function releaseVideo() {
+      video.pause();
+      video.classList.remove('playing');
+      video.removeAttribute('src');
+      try { video.load(); } catch (e) {}
+      overlay.classList.remove('open', 'shown', 'closing', 'failed', 'paused');
+      overlay.setAttribute('aria-hidden', 'true');
+      video.dataset.state = 'released';
+    }
+    function finish() {
+      if (!active) return;
+      active = false;
+      remember();
+      video.dataset.state = 'finished';
+      overlay.classList.add('closing');
+      clearTimeout(releaseTimer);
+      releaseTimer = setTimeout(releaseVideo, 700);
+    }
+    function fail() {
+      if (!active) return;
+      video.dataset.state = 'error';
+      overlay.classList.remove('paused');
+      overlay.classList.add('failed');
+      play.focus();
+    }
+    function showPaused() {
+      video.dataset.state = 'paused';
+      overlay.classList.add('paused');
+    }
+    function start(manual) {
+      clearTimeout(releaseTimer);
+      active = true;
+      overlay.classList.remove('closing', 'failed', 'paused');
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(function () { overlay.classList.add('shown'); });
+      video.dataset.state = 'loading';
+      if (!video.getAttribute('src') || firstStart) {
+        firstStart = false;
+        video.setAttribute('src', MEDIA_SRC);
+        try { video.load(); } catch (e) {}
+      }
+      var promise = video.play();
+      if (promise && promise.catch) promise.catch(function () {
+        if (manual) fail(); else { overlay.classList.add('paused'); play.focus(); }
+      });
+    }
+
+    video.addEventListener('playing', function () {
+      remember();
+      video.dataset.state = 'playing';
+      video.classList.add('playing');
+      overlay.classList.remove('paused', 'failed');
+    });
+    video.addEventListener('ended', finish);
+    video.addEventListener('error', fail);
+    video.addEventListener('click', function () {
+      if (!video.paused) { video.pause(); showPaused(); }
+      else start(true);
+    });
+    skip.addEventListener('click', finish);
+    play.addEventListener('click', function () { start(true); });
+    replayButton.addEventListener('click', function () { start(true); });
+
+    introController = {
+      sync: function () {},
+      start: function () { start(true); }
+    };
+
+    if (disableIntro) {
+      releaseVideo();
+      return;
+    }
+    if (forceIntro) {
+      setTimeout(function () { start(false); }, 80);
+      return;
+    }
+    if (seen || reducedMotion) return;
+    function scheduleAutoIntro() { setTimeout(function () { if (!seen && !active) start(false); }, 650); }
+    if (document.readyState === 'complete') scheduleAutoIntro();
+    else window.addEventListener('load', scheduleAutoIntro, { once: true });
+  }
+
   if (/[?&]solarTest=1/.test(location.search)) runSolarSelfTests();
 
   // ── go ───────────────────────────────────────────────────────────────────────
+  initForkUiControls();
   startLoop();
 </script>
 </body>

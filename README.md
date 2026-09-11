@@ -1,8 +1,14 @@
 **English** | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
 
 # Galaxy Explorer 🌌
-Demo Page
-https://zjoooooo.github.io/galaxy-explorer/
+[Demo Page](https://anzeer7676-dotcom.github.io/galaxy-explorer/)
+
+> **Fork notice:** This is a lightly modified, noncommercial fork of
+> [Galaxy Explorer](https://github.com/zjoooooo/galaxy-explorer) by Justin
+> Zhang Jun, maintained by
+> [@anzeer7676-dotcom](https://github.com/anzeer7676-dotcom). It adds
+> low-risk UI/accessibility refinements and an Agnes-generated opening film.
+> See [`NOTICE.md`](NOTICE.md) for provenance and media disclosure.
 
 <img width="1920" height="945" alt="Image_2026-07-04_141404_478" src="https://github.com/user-attachments/assets/ce6388f3-5854-4c13-9d6c-daccac89bf24" />
 
@@ -96,7 +102,7 @@ some features like audio and textures on the `file://` protocol).
 
 ```sh
 # 1. get the code
-git clone https://github.com/zjoooooo/galaxy-explorer.git
+git clone https://github.com/anzeer7676-dotcom/galaxy-explorer.git
 cd galaxy-explorer
 
 # 2. serve it with any static server, e.g.:
@@ -129,6 +135,10 @@ nginx, or any web host. Just upload the folder — there is nothing to build.
   4 s so you can see the ambient effects immediately.
 - `?tune=1` — live sliders for the nebula-glow shader; tweak the look in real
   time and copy the values into the tunables when you like them.
+- `?intro=1` — force the Agnes-generated opening film, even after it has been
+  seen.
+- `?intro=0` — disable the opening film for screenshots and uninterrupted
+  testing.
 
 ## 🎛️ Customise
 

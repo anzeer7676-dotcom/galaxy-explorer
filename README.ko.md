@@ -1,8 +1,14 @@
 [English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | **한국어**
 
 # Galaxy Explorer 🌌
-데모 페이지
-https://zjoooooo.github.io/galaxy-explorer/
+[데모 페이지](https://anzeer7676-dotcom.github.io/galaxy-explorer/)
+
+> **Fork 안내:** 이 저장소는 Justin Zhang Jun의
+> [Galaxy Explorer](https://github.com/zjoooooo/galaxy-explorer)를 가볍게 수정한 비상업적 포크이며,
+> [@anzeer7676-dotcom](https://github.com/anzeer7676-dotcom)이 유지 관리합니다. 위험 부담이 낮은 UI·접근성 개선과
+> Agnes로 생성한 인트로 영상을 추가했습니다. 출처와 미디어 고지는
+> [`NOTICE.md`](NOTICE.md)를 참고하세요.
+
 <img width="1920" height="945" alt="Image_2026-07-04_141404_478" src="https://github.com/user-attachments/assets/ce6388f3-5854-4c13-9d6c-daccac89bf24" />
 
 WebGL(three.js)만으로 브라우저에서 완전히 동작하는, 절차적으로 생성되는 인터랙티브 **우리은하(Milky Way)** 시각화입니다 — 완전한 3D **태양계**, 떠도는 **혜성**, 그리고 실제 **전파 은하 제트**까지 담았습니다. 백엔드도, 빌드 과정도, 설치할 의존성도, API 키도 필요 없습니다 — 페이지를 열기만 하면 바로 탐험할 수 있습니다.
@@ -40,7 +46,7 @@ WebGL(three.js)만으로 브라우저에서 완전히 동작하는, 절차적으
 
 ```sh
 # 1. 코드 받기
-git clone https://github.com/zjoooooo/galaxy-explorer.git
+git clone https://github.com/anzeer7676-dotcom/galaxy-explorer.git
 cd galaxy-explorer
 
 # 2. 아무 정적 서버로 서빙하기, 예:

@@ -1,8 +1,14 @@
 [English](README.md) | [简体中文](README.zh-CN.md) | **日本語** | [한국어](README.ko.md)
 
 # Galaxy Explorer 🌌
-デモページ
-https://zjoooooo.github.io/galaxy-explorer/
+[デモページ](https://anzeer7676-dotcom.github.io/galaxy-explorer/)
+
+> **Fork について：** 本リポジトリは Justin Zhang Jun による
+> [Galaxy Explorer](https://github.com/zjoooooo/galaxy-explorer) の軽度な非商用改変版で、
+> [@anzeer7676-dotcom](https://github.com/anzeer7676-dotcom) が保守しています。低リスクな UI・アクセシビリティ改善と、
+> Agnes で生成したオープニング映像を追加しています。由来と素材の開示は
+> [`NOTICE.md`](NOTICE.md) を参照してください。
+
 <img width="1920" height="945" alt="Image_2026-07-04_141404_478" src="https://github.com/user-attachments/assets/ce6388f3-5854-4c13-9d6c-daccac89bf24" />
 
 完全な 3D の**太陽系**、さまよう**彗星**、そして本物の**電波銀河ジェット**を備えた、インタラクティブなプロシージャル生成の**天の川銀河**。WebGL（three.js）だけでブラウザ上で完結します。バックエンドもビルド工程も、依存パッケージのインストールも API キーも不要 — ページを開くだけで探索できます。
@@ -40,7 +46,7 @@ https://zjoooooo.github.io/galaxy-explorer/
 
 ```sh
 # 1. get the code
-git clone https://github.com/zjoooooo/galaxy-explorer.git
+git clone https://github.com/anzeer7676-dotcom/galaxy-explorer.git
 cd galaxy-explorer
 
 # 2. serve it with any static server, e.g.:

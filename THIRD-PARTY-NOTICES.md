@@ -2,7 +2,12 @@
 
 This project bundles third-party software under `vendor/`. Their copyright and
 license notices are reproduced below. The project itself is under the
-[MIT License](LICENSE).
+[PolyForm Noncommercial License 1.0.0](LICENSE).
+
+This repository is a noncommercial fork maintained by
+[@anzeer7676-dotcom](https://github.com/anzeer7676-dotcom). Its upstream
+provenance, modifications, and generated opening-media disclosure are recorded in
+[`NOTICE.md`](NOTICE.md).
 
 ## Solar-system textures (`images/solar-system/`)
 
